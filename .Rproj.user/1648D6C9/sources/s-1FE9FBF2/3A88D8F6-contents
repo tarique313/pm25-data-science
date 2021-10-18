@@ -1,0 +1,39 @@
+library(ggplot2)
+library(RColorBrewer)
+
+# Create Data folder if not exist.
+if (!file.exists("./data")) {
+  dir.create("./data")
+}
+
+# Download the data file and extract it to data folder.
+fileUrl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+download.file(fileUrl, destfile = "./data.zip")
+unzip("./data.zip", exdir = "./data")
+
+#Delete the zip file after extraction.
+unlink("./data.zip")
+
+# Load the data:
+NEI <- readRDS("./data/summarySCC_PM25.rds")
+SCC <- readRDS("./data/Source_Classification_Code.rds")
+
+str(NEI)
+str(SCC)
+
+
+
+png("plot2.png", width = 450, height = 450)
+
+
+# Now we use the base plotting system to make a plot of this data
+
+barplot(
+  totalsBaltimore$Emissions,
+  names.arg=totalsBaltimore$year,
+  xlab="Year",
+  ylab="PM2.5 Emissions (Tons)",
+  main="Total PM2.5 Emissions From All Baltimore City Sources"
+)
+
+dev.off()

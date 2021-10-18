@@ -1,0 +1,36 @@
+library(ggplot2)
+library(RColorBrewer)
+library(dplyr)
+# Create Data folder if not exist.
+if (!file.exists("./data")) {
+  dir.create("./data")
+}
+
+# Download the data file and extract it to data folder.
+fileUrl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+download.file(fileUrl, destfile = "./data.zip")
+unzip("./data.zip", exdir = "./data")
+
+#Delete the zip file after extraction.
+unlink("./data.zip")
+
+# Load the data:
+emissions_data <- readRDS("./data/summarySCC_PM25.rds")
+class_code <- readRDS("./data/Source_Classification_Code.rds")
+
+# 24510 is Baltimore
+subset_emissions_data  <- emissions_data[emissions_data$fips=="24510", ]
+
+aggregatedTotalByYearAndType <- aggregate(Emissions ~ year + type, subset_emissions_data, sum)
+
+# Save the plot in png image format
+png("plot3.png", width=640, height=480)
+
+# Make the plot
+g <- ggplot(aggregatedTotalByYearAndType, aes(year, Emissions, color = type))
+g <- g + geom_line() +
+  xlab("year") +
+  ylab(expression('Total PM'[2.5]*" Emissions")) +
+  ggtitle('Total Emissions in Baltimore City, Maryland (fips == "24510") from 1999 to 2008')
+print(g)
+dev.off()
